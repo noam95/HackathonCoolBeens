@@ -96,7 +96,7 @@ def tcpState(Tcp_Port):
             global tuching
             tuching = False
             print("after")
-            print("\n" * 10)
+            print("\n" * 100)
             print("timeFinish")
             try:
                 winner = s.recv(1024)
