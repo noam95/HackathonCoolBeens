@@ -29,10 +29,10 @@ def Main():
         Tcp_Port = udpState()
         if Tcp_Port != 0:
             tcpState(Tcp_Port)
-        if (input("continue? y/n") == 'n'):
-            continueask = False
-        global tuching
-        tuching = True
+        # if (input("continue? y/n") == 'n'):
+        #     continueask = False
+        # global tuching
+        # tuching = True
 
     print("finish")
 
