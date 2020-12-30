@@ -4,9 +4,11 @@
 ● Game mode - collect characters and from the keyboard and send them over TCP. collect
 data from the network and print it onscreen
 '''
-import socket
+import socket, threading
 import struct
 import datetime, time
+import getch
+import multiprocessing
 
 
 # local host IP '127.0.0.1'
@@ -17,7 +19,29 @@ host = 'gamal'
 
 # Define the port on which you want to connect
 port = 13117
-#port = 7001
+port = 7002
+tuching = True
+def getTuch(soc):
+    global tuching
+    while tuching:
+        try:
+            s ="c"
+            print("before inside")
+            tosend = getch.getch()
+            print("after inside")
+            soc.send(s.encode())
+        except:
+            print("fail in getting tuch func")
+
+class tuchthread(threading.Thread):
+    def __init__(self,soc):
+        threading.Thread.__init__(self)
+        self.soc = soc
+    def run(self):
+        global tuching
+        while tuching:
+            getTuch(self.soc)
+
 def tcpState(Tcp_Port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,13 +70,19 @@ def tcpState(Tcp_Port):
             starttype = starttype.decode()
             print(starttype)
             # game start
-            then = datetime.datetime.now() + datetime.timedelta(seconds=10)
-            # g = getch.getch()
-            while then > datetime.datetime.now():
-                time.sleep(1)
-                print("s")
-                s.send(team_name.encode())
-                # s.send(g)  # check if this line sends key pressing
+            #g = getch()
+            # tosend = getch.getch()
+            print("before")
+            # newthread = tuchthread(s)
+            # newthread.start()
+            # newthread.join(10)
+            p = multiprocessing.Process(getTuch(s))
+            p.start()
+            time.sleep(10)
+            global tuching
+            tuching = False
+            print("after")
+            s.send(team_name.encode())
             print("timeFinish")
             try:
                 winner = s.recv(1024)
@@ -107,3 +137,4 @@ while True:
     Tcp_Port = udpState()
     if Tcp_Port != 0:
         tcpState(Tcp_Port)
+

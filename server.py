@@ -17,8 +17,9 @@ class game:
     bol = True
     counter1 = 0
     counter2 = 0
-
-
+    fastestPlayer = ["", 0]
+    slowliestPlaer = ["", 0]
+    totalpress= 0
     def assignToTeam(self, player):
         global gameClasslock1
         gameClasslock1.acquire(True)
@@ -42,19 +43,29 @@ class game:
             msg += i + "\n"
         return msg
 
-    def updateScore(self, counter, grupName):
+    def updateScore(self, counter, grupName, name):
         global gameClasslock1
         gameClasslock1.acquire(True)
         if (grupName == "team1"):
             self.counter1 += counter
         else:
             self.counter2 += counter
+        self.totalpress += counter
+        if counter > self.fastestPlayer[1]:
+            self.fastestPlayer[1] = counter
+            self.fastestPlayer[0] = name
+        if counter < self.slowliestPlaer[1]:
+            self.slowliestPlaer[1] = counter
+            self.slowliestPlaer[0] = name
         gameClasslock1.release()
 
     def calculateScore(self):
         msg= "game has finished\ngroup1 get "+ str(self.counter1) +" points.\n"
         msg += "group2 get " + str(self.counter2) + " points\n"
-        msg += "and the winer is......."
+        msg += "The best player was " + self.fastestPlayer[0] + " he pressed " +str(self.fastestPlayer[1]) + " on keyboard\n"
+        msg += "The worst player was " + self.slowliestPlaer[0] + " he pressed " + str(self.slowliestPlaer[1]) + " on keyboard\n"
+        msg += "The average presses for all the players together was " + str(self.totalpress/(len(self.team2)+ len(self.team1))) + " press in 10 sec"
+        msg += "\nAnd the winer is......."
         flag= False
         if self.counter1> self.counter2:
             flag = True
@@ -72,12 +83,15 @@ class game:
         self.bol = True
         self.counter1 = 0
         self.counter2 = 0
+        self.fastestPlayer = ["", 0]
+        self.slowliestPlaer = ["", 0]
+        self.totalpress= 0
 
 LOCALHOST = socket.gethostbyname(socket.gethostname())
 # LOCALHOST = '172.18.0.108'
 print(LOCALHOST)
 UDP_PORT = 13117
-#UDP_PORT = 7001
+UDP_PORT = 7002
 SERVER_TCP_PORT = 7000
 gameClasslock1 = threading.Lock()
 getMessageLock1 = threading.Lock()
@@ -141,6 +155,7 @@ class tcpConnection(threading.Thread):
 
 class ClientThread(threading.Thread):
     groupName = ""
+    clientname = ""
     def __init__(self, clientAddress, clientsocket):
         threading.Thread.__init__(self)
         self.clientAddress = clientAddress
@@ -149,18 +164,18 @@ class ClientThread(threading.Thread):
     def run(self):
         self.csocket.settimeout(40)#case no msg recived
         data = self.csocket.recv(2048)
-        clientname = data.decode()
-        self.groupName = game1.assignToTeam(clientname)
+        self.clientname = data.decode()
+        self.groupName = game1.assignToTeam(self.clientname)
         global getMessageLock1
         while(getMessageLock1.locked()):
-            pass
+            time.sleep(0.01)
         val = self.startGameMassge()
         # if not val:#player is not playing
         #
         #     return
         global sendScoreLock1
         while(sendScoreLock1.locked()):
-            pass
+            time.sleep(0.01)
         val = self.sendScore()
         if not val:
             return
@@ -180,7 +195,7 @@ class ClientThread(threading.Thread):
             then = datetime.datetime.now() + datetime.timedelta(seconds=10)
             try:
                 while then > datetime.datetime.now():
-
+                    time.sleep(0.01)
                     self.csocket.settimeout(10)
                     if self.csocket.recv(1024):
                         counter_game += 1
@@ -188,7 +203,7 @@ class ClientThread(threading.Thread):
                 print("fail in getting typing from client")
                 return False
 
-            game1.updateScore(counter_game, self.groupName)
+            game1.updateScore(counter_game, self.groupName, self.clientname)
             print(counter_game)
         except:
             print("client lost connection")
