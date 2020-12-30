@@ -168,7 +168,7 @@ def udpState():
         print(host)
         print(f"Received offer from {host}, attempting to connect...")
     except:
-        # print("can't connet to server udp")
+        print("can't connet to server udp")
     udp_socket.close()
     return TCP_PORT
 
