@@ -12,6 +12,7 @@ import multiprocessing
 
 
 # local host IP '127.0.0.1'
+import sys
 import time
 #username = input("Enter port")
 #host = '127.0.0.1'
@@ -27,23 +28,26 @@ def Main():
         Tcp_Port = udpState()
         if Tcp_Port != 0:
             tcpState(Tcp_Port)
-        global tuching
-        tuching = True
+        # global tuching
+        # tuching = True
         if (input("continue? y/n") == 'n'):
             continueask = False
 
+    print("finish")
+
+
 def getTuch(soc):
     global tuching
-    while tuching:
-        try:
+    try:
+        while tuching:
             s ="c"
-            print("before inside")
+            #print("before inside")
             tosend = getch.getch()
             # print(input("input"))
-            print("after inside")
+            #print("after inside")
             soc.send(s.encode())
-        except:
-            print("fail in getting tuch func")
+    except:
+        print("fail in getting tuch func")
 
 class tuchthread(threading.Thread):
     def __init__(self,soc):
@@ -51,6 +55,9 @@ class tuchthread(threading.Thread):
         self.soc = soc
     def run(self):
         getTuch(self.soc)
+        sys.exit()
+    def raisexp(self):
+        raise Exception("therad killed")
 
 def tcpState(Tcp_Port):
     try:
@@ -86,6 +93,7 @@ def tcpState(Tcp_Port):
             newthread = tuchthread(s)
             newthread.start()
             newthread.join(10)
+            newthread.raisexp()
 
             # p = multiprocessing.Process(getTuch(s))
             # p.start()
