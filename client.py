@@ -4,6 +4,7 @@
 ● Game mode - collect characters and from the keyboard and send them over TCP. collect
 data from the network and print it onscreen
 '''
+import os
 import socket, threading
 import struct
 import datetime, time
@@ -20,7 +21,7 @@ host = 'gamal'
 
 # Define the port on which you want to connect
 port = 13117
-#port = 7002
+port = 7002
 tuching = True
 def Main():
     continueask = True
@@ -120,6 +121,7 @@ def tcpState(Tcp_Port):
             # tuching = False
             print("after")
             print("\n" * 100)
+            os.system('clear')
             print("timeFinish")
             try:
                 winner = s.recv(1024)

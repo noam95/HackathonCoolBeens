@@ -91,7 +91,7 @@ LOCALHOST = socket.gethostbyname(socket.gethostname())
 # LOCALHOST = '172.18.0.108'
 print(LOCALHOST)
 UDP_PORT = 13117
-#UDP_PORT = 7002
+UDP_PORT = 7002
 SERVER_TCP_PORT = 7000
 gameClasslock1 = threading.Lock()
 getMessageLock1 = threading.Lock()
