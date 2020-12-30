@@ -37,18 +37,21 @@ def Main():
     print("finish")
 
 
-# def getTuch(soc):
-#     global tuching
-#     try:
-#         while tuching:
-#             s ="c"
-#             print("go")
-#             tosend = getch.getch()
-#             #print(input("input"))
-#             # print("after inside")
-#             soc.send(s.encode())
-#     except:
-#         print("fail in getting tuch func")
+def getTuch(soc):
+    # global tuching
+    # try:
+    #     while tuching:
+    then = datetime.datetime.now() + datetime.timedelta(seconds=10)
+    try:
+        while then > datetime.datetime.now():
+            s ="c"
+            print("go")
+            tosend = getch.getch()
+            #print(input("input"))
+            # print("after inside")
+            soc.send(s.encode())
+    except:
+        print("fail in getting tuch func")
 
 class tuchthread(threading.Thread):
     def __init__(self,soc):
@@ -98,19 +101,21 @@ def tcpState(Tcp_Port):
             starttype = starttype.decode()
             print(starttype)
             # game start
-            #g = getch()
+            g = getch()
             # tosend = getch.getch()
-            print("before")
-            try:
-                newthread = tuchthread(s)
-                newthread.start()
-                newthread.join(10)
-                #time.sleep(5)
-                #newthread.raisexp()
-                global tuching
-                tuching = False
-            except:
-                print("cath exp")
+
+            # print("before")
+            # try:
+            #     newthread = tuchthread(s)
+            #     newthread.start()
+            #     newthread.join(10)
+            #     #time.sleep(5)
+            #     #newthread.raisexp()
+            #     global tuching
+            #     tuching = False
+            # except:
+            #     print("cath exp")
+
             # p = multiprocessing.Process(getTuch(s))
             # p.start()
             # print("asd")
@@ -120,8 +125,8 @@ def tcpState(Tcp_Port):
             # global tuching
             # tuching = False
             print("after")
-            print("\n" * 100)
-            os.system('clear')
+            # print("\n" * 100)
+            # os.system('clear')
             print("timeFinish")
             try:
                 winner = s.recv(1024)
