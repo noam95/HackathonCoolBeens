@@ -20,7 +20,7 @@ host = 'gamal'
 
 # Define the port on which you want to connect
 port = 13117
-port = 7002
+#port = 7002
 tuching = True
 def Main():
     continueask = True
