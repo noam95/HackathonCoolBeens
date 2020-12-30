@@ -5,11 +5,10 @@ and new TCP connections. You leave this state after 10 seconds.
 state after 10 seconds.
 '''
 
+
 import socket, threading
 import struct
 import time
-from pip._vendor.distlib.compat import raw_input
-from concurrent.futures import ThreadPoolExecutor
 import datetime, time
 
 class game:
@@ -21,16 +20,17 @@ class game:
 
 
     def assignToTeam(self, player):
-        gameClasslock.acquire(True)
+        global gameClasslock1
+        gameClasslock1.acquire(True)
         if self.bol:
             self.team1.append(player)
             self.bol = False
-            gameClasslock.release()
+            gameClasslock1.release()
             return "team1"
         else:
             self.team2.append(player)
             self.bol = True
-            gameClasslock.release()
+            gameClasslock1.release()
             return "team2"
 
     def getGroupsMsg(self):
@@ -43,22 +43,26 @@ class game:
         return msg
 
     def updateScore(self, counter, grupName):
-        gameClasslock.acquire(True)
+        global gameClasslock1
+        gameClasslock1.acquire(True)
         if (grupName == "team1"):
             self.counter1 += counter
         else:
             self.counter2 += counter
-        gameClasslock.release()
+        gameClasslock1.release()
 
     def calculateScore(self):
-        msg= "game over\ngroup1 get"+ str(self.counter1) +"points.\n"
-        msg += "group2 get" + str(self.counter2) + "points\n"
+        msg= "game has finished\ngroup1 get "+ str(self.counter1) +" points.\n"
+        msg += "group2 get " + str(self.counter2) + " points\n"
         msg += "and the winer is......."
+        flag= False
         if self.counter1> self.counter2:
+            flag = True
             msg += str(self.team1)
         if self.counter1< self.counter2:
+            flag = True
             msg+= str(self.team2)
-        else:
+        if not flag:
             msg+= "tekooooo\n"
         msg += "Congratulations!!!!!!!!"
         return msg
@@ -69,24 +73,38 @@ class game:
         self.counter1 = 0
         self.counter2 = 0
 
-
-LOCALHOST = "127.0.0.1"
+LOCALHOST = socket.gethostbyname(socket.gethostname())
+# LOCALHOST = '172.18.0.108'
+print(LOCALHOST)
 UDP_PORT = 13117
+#UDP_PORT = 7001
 SERVER_TCP_PORT = 7000
-gameClasslock = threading.Lock()
-getMessageLock = threading.Lock()
-sendScoreLock = threading.Lock()
+gameClasslock1 = threading.Lock()
+getMessageLock1 = threading.Lock()
+sendScoreLock1 = threading.Lock()
 threads = []
-
 game1 = game()
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 def Main():
     while True:
-        getMessageLock.acquire()
-        sendScoreLock.acquire()
+        global getMessageLock1
+        global sendScoreLock1
+
+        getMessageLock1.acquire()
+        sendScoreLock1.acquire()
         udpthread = udpThraed()
-        print("udpThred start")
+        print('\033[93m'+"udpThred start"+ bcolors.ENDC)
         udpthread.start()
         tcpthread = tcpConnection()
         print("tcp thread start")
@@ -96,15 +114,15 @@ def Main():
         print("udp/tcp thread finished")
         if(len(threads) != 0 ):
             # groupsMsg = game1.getGroupsMsg()
-            getMessageLock.release()#start game
+            getMessageLock1.release()#start game
             time.sleep(12)
             print("game Finished")
-            sendScoreLock.release()#clculating score
+            sendScoreLock1.release()#clculating score
             time.sleep(10)
             game1.reset()
         else:
-            getMessageLock.release()
-            sendScoreLock.release()
+            getMessageLock1.release()
+            sendScoreLock1.release()
 
     #close all the threads
     #reset game
@@ -133,12 +151,15 @@ class ClientThread(threading.Thread):
         data = self.csocket.recv(2048)
         clientname = data.decode()
         self.groupName = game1.assignToTeam(clientname)
-        while(getMessageLock.locked()):
+        global getMessageLock1
+        while(getMessageLock1.locked()):
             pass
         val = self.startGameMassge()
-        if not val:
-            return
-        while(sendScoreLock.locked()):
+        # if not val:#player is not playing
+        #
+        #     return
+        global sendScoreLock1
+        while(sendScoreLock1.locked()):
             pass
         val = self.sendScore()
         if not val:
@@ -146,13 +167,13 @@ class ClientThread(threading.Thread):
 
     def startGameMassge(self):
         try:
-            msg = 'Welcome to Keyboard Spamming Battle Royale.'
-            self.csocket.send(msg.encode())
-            self.csocket.recv(1024)
-            groupsMsg = game1.getGroupsMsg()
-            self.csocket.send(groupsMsg.encode())
-            self.csocket.recv(1024)
-            startMsg = 'Start pressing keys on your keyboard as fast as you can!!'
+            msg = '\033[95m' + 'Welcome to Keyboard Spamming Battle Royale.\n'+ bcolors.ENDC + bcolors.HEADER + bcolors.OKBLUE + bcolors.OKCYAN +'by KORKIFIX 077-202-4828 10 presents dicount for the winner!' + bcolors.ENDC+'\n'
+            # self.csocket.send(msg.encode())
+            #self.csocket.recv(1024)
+            groupsMsg = '\033[94m' + game1.getGroupsMsg() + bcolors.ENDC
+            # self.csocket.send(groupsMsg.encode())
+            # self.csocket.recv(1024)
+            startMsg =msg + groupsMsg+ bcolors.OKGREEN + '\nStart pressing keys on your keyboard as fast as you can!!\n'+ bcolors.ENDC
             self.csocket.send(startMsg.encode())
 
             counter_game = 0
@@ -174,7 +195,7 @@ class ClientThread(threading.Thread):
             return False
     def sendScore(self):
         try:
-            msg = game1.calculateScore()
+            msg = bcolors.WARNING + bcolors.BOLD + game1.calculateScore()+ bcolors.ENDC
             self.csocket.send(msg.encode())
         except:
             print("client connection lost")
@@ -193,28 +214,39 @@ class ClientThread(threading.Thread):
 
 
 def tcp_state():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server.bind((LOCALHOST, SERVER_TCP_PORT))
-    while True:
-        server.listen(10)
-        clientsock, clientAddress = server.accept()
-        newthread = ClientThread(clientAddress, clientsock)
-        newthread.start()
-        threads.append(newthread)
+    try:
+        print(LOCALHOST)
+        print(SERVER_TCP_PORT)
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind((LOCALHOST, SERVER_TCP_PORT))
+        server.settimeout(10)
+        try:
+            while True:
+                server.listen(10)
+                clientsock, clientAddress = server.accept()
+                print("some one tried to connect tcp")
+                newthread = ClientThread(clientAddress, clientsock)
+                newthread.start()
+                threads.append(newthread)
+        except:
+            server.close()
+            print("tcp connection making time out")
+    except:
+        print("tcp connection refused/faileddddd")
 
 def udpState():
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    #udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     #pack the udp format with struct
-    udp_offer_msg = struct.pack('Ibh', 0xfeedbeef, 0x2, SERVER_TCP_PORT)
+    udp_offer_msg = struct.pack('I B H', 0xfeedbeef, 0x2, SERVER_TCP_PORT)
 
-    print("Server started,listening on IP address 172.1.0.1")
+    print(f"Server started,listening on IP address {LOCALHOST}")
     then = datetime.datetime.now() + datetime.timedelta(seconds=10)
     while then > datetime.datetime.now():
-        udp_socket.sendto(udp_offer_msg, ('<broadcast>', UDP_PORT))
+        udp_socket.sendto(udp_offer_msg, ('172.1.0', UDP_PORT))
         time.sleep(1)
 
     #closing the udp thread after 10 seconds of offering messages.
