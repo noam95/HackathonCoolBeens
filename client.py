@@ -17,7 +17,7 @@ import sys
 import time
 #username = input("Enter port")
 #host = '127.0.0.1'
-host = 'gamal'
+host = ''
 
 # Define the port on which you want to connect
 port = 13117
@@ -34,7 +34,7 @@ def Main():
         # global tuching
         # tuching = True
 
-    print("finish")
+    # print("finish")
 
 
 def getTuch(soc):
@@ -62,7 +62,7 @@ class tuchthread(threading.Thread):
         try:
             while tuching:
                 s = "c"
-                print("go")
+                # print("go")
                 tosend = getch.getch()
                 # print(input("input"))
                 # print("after inside")
@@ -89,20 +89,13 @@ def tcpState(Tcp_Port):
         # messaga received from server
         s.settimeout(40)
         try:
-            # welcomeMSG = s.recv(1024)
-            # welcomeMSG = welcomeMSG.decode()
-            # print(welcomeMSG)
-            # s.send(b'ack')
-            # groups = s.recv(1024)
-            # groups = groups.decode()
-            # print(groups)
-            # s.send(b'ack')
-            starttype = s.recv(1024)
-            starttype = starttype.decode()
-            print(starttype)
-            # game start
-            getTuch(s)
-            # tosend = getch.getch()
+
+            # starttype = s.recv(1024)
+            # starttype = starttype.decode()
+            # print(starttype)
+            # # game start
+            # getTuch(s)
+            #
 
             # print("before")
             # try:
@@ -116,15 +109,16 @@ def tcpState(Tcp_Port):
             # except:
             #     print("cath exp")
 
-            # p = multiprocessing.Process(getTuch(s))
-            # p.start()
-            # print("asd")
-            # time.sleep(10)
-            # p.terminate()
+            p = multiprocessing.Process(getTuch(s))
+            p.daemon = True
+            p.start()
+            print("asd")
+            time.sleep(10)
+            p.terminate()
 
             # global tuching
             # tuching = False
-            print("after")
+            # print("after")
             # print("\n" * 100)
             # os.system('clear')
             print("timeFinish")
@@ -174,7 +168,7 @@ def udpState():
         print(host)
         print(f"Received offer from {host}, attempting to connect...")
     except:
-        print("can't connet to server udp")
+        # print("can't connet to server udp")
     udp_socket.close()
     return TCP_PORT
 
