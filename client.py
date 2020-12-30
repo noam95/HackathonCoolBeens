@@ -36,25 +36,35 @@ def Main():
     print("finish")
 
 
-def getTuch(soc):
-    global tuching
-    try:
-        while tuching:
-            s ="c"
-            print("go")
-            tosend = getch.getch()
-            #print(input("input"))
-            # print("after inside")
-            soc.send(s.encode())
-    except:
-        print("fail in getting tuch func")
+# def getTuch(soc):
+#     global tuching
+#     try:
+#         while tuching:
+#             s ="c"
+#             print("go")
+#             tosend = getch.getch()
+#             #print(input("input"))
+#             # print("after inside")
+#             soc.send(s.encode())
+#     except:
+#         print("fail in getting tuch func")
 
 class tuchthread(threading.Thread):
     def __init__(self,soc):
         threading.Thread.__init__(self)
         self.soc = soc
     def run(self):
-        getTuch(self.soc)
+        global tuching
+        try:
+            while tuching:
+                s = "c"
+                print("go")
+                tosend = getch.getch()
+                # print(input("input"))
+                # print("after inside")
+                self.soc.send(s.encode())
+        except:
+            print("fail in getting tuch func")
         sys.exit()
     def raisexp(self):
         raise Exception("therad killed")
