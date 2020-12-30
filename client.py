@@ -28,10 +28,10 @@ def Main():
         Tcp_Port = udpState()
         if Tcp_Port != 0:
             tcpState(Tcp_Port)
-        # global tuching
-        # tuching = True
         if (input("continue? y/n") == 'n'):
             continueask = False
+        global tuching
+        tuching = True
 
     print("finish")
 
@@ -93,9 +93,11 @@ def tcpState(Tcp_Port):
             try:
                 newthread = tuchthread(s)
                 newthread.start()
-                #newthread.join(10)
-                time.sleep(5)
-                newthread.raisexp()
+                newthread.join(10)
+                #time.sleep(5)
+                #newthread.raisexp()
+                global tuching
+                tuching = False
             except:
                 print("cath exp")
             # p = multiprocessing.Process(getTuch(s))
