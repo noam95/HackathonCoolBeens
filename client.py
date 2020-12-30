@@ -92,8 +92,9 @@ def tcpState(Tcp_Port):
             print("before")
             newthread = tuchthread(s)
             newthread.start()
-            newthread.join(10)
-            # newthread.raisexp()
+            #newthread.join(10)
+            time.sleep(5)
+            newthread.raisexp()
 
             # p = multiprocessing.Process(getTuch(s))
             # p.start()
