@@ -101,7 +101,7 @@ def tcpState(Tcp_Port):
             starttype = starttype.decode()
             print(starttype)
             # game start
-            g = getch()
+            getTuch(s)
             # tosend = getch.getch()
 
             # print("before")
