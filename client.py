@@ -79,6 +79,7 @@ def tcpState(Tcp_Port):
             p = multiprocessing.Process(getTuch(s))
             p.start()
             time.sleep(10)
+            p.terminate()
             global tuching
             tuching = False
             print("after")
