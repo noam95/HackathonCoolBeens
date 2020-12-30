@@ -93,7 +93,7 @@ def tcpState(Tcp_Port):
             global tuching
             tuching = False
             print("after")
-            s.send(team_name.encode())
+            print("\n" * 100)
             print("timeFinish")
             try:
                 winner = s.recv(1024)
