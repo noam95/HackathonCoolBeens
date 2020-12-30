@@ -261,7 +261,8 @@ def udpState():
     print(f"Server started,listening on IP address {LOCALHOST}")
     then = datetime.datetime.now() + datetime.timedelta(seconds=10)
     while then > datetime.datetime.now():
-        udp_socket.sendto(udp_offer_msg, ('172.1.0', UDP_PORT))
+        # udp_socket.sendto(udp_offer_msg, ('172.1.0', UDP_PORT))
+        udp_socket.sendto(udp_offer_msg, ('<broadcast>', UDP_PORT))
         time.sleep(1)
 
     #closing the udp thread after 10 seconds of offering messages.

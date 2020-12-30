@@ -7,7 +7,7 @@ data from the network and print it onscreen
 import socket, threading
 import struct
 import datetime, time
-import getch
+# import getch
 import multiprocessing
 
 
@@ -21,13 +21,22 @@ host = 'gamal'
 port = 13117
 port = 7002
 tuching = True
+def Main():
+    while True:
+        Tcp_Port = udpState()
+        if Tcp_Port != 0:
+            tcpState(Tcp_Port)
+        global tuching
+        tuching = True
+
 def getTuch(soc):
     global tuching
     while tuching:
         try:
             s ="c"
             print("before inside")
-            tosend = getch.getch()
+            # tosend = getch.getch()
+            print(input("input"))
             print("after inside")
             soc.send(s.encode())
         except:
@@ -38,9 +47,7 @@ class tuchthread(threading.Thread):
         threading.Thread.__init__(self)
         self.soc = soc
     def run(self):
-        global tuching
-        while tuching:
-            getTuch(self.soc)
+        getTuch(self.soc)
 
 def tcpState(Tcp_Port):
     try:
@@ -73,13 +80,16 @@ def tcpState(Tcp_Port):
             #g = getch()
             # tosend = getch.getch()
             print("before")
-            # newthread = tuchthread(s)
-            # newthread.start()
-            # newthread.join(10)
-            p = multiprocessing.Process(getTuch(s))
-            p.start()
-            time.sleep(10)
-            p.terminate()
+            newthread = tuchthread(s)
+            newthread.start()
+            newthread.join(10)
+
+            # p = multiprocessing.Process(getTuch(s))
+            # p.start()
+            # print("asd")
+            # time.sleep(10)
+            # p.terminate()
+
             global tuching
             tuching = False
             print("after")
@@ -127,15 +137,15 @@ def udpState():
         global host
         host = address[0]
         #host = '127.0.0.1'
-        # host = '172.18.0.108'
+        host = '192.168.1.18'
         print(host)
         print(f"Received offer from {host}, attempting to connect...")
     except:
         print("can't connet to server udp")
     udp_socket.close()
     return TCP_PORT
-while True:
-    Tcp_Port = udpState()
-    if Tcp_Port != 0:
-        tcpState(Tcp_Port)
+
+if __name__ == '__main__':
+    Main()
+
 
