@@ -93,7 +93,7 @@ def tcpState(Tcp_Port):
             newthread = tuchthread(s)
             newthread.start()
             newthread.join(10)
-            newthread.raisexp()
+            # newthread.raisexp()
 
             # p = multiprocessing.Process(getTuch(s))
             # p.start()
@@ -101,8 +101,8 @@ def tcpState(Tcp_Port):
             # time.sleep(10)
             # p.terminate()
 
-            global tuching
-            tuching = False
+            # global tuching
+            # tuching = False
             print("after")
             print("\n" * 100)
             print("timeFinish")
