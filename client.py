@@ -90,10 +90,10 @@ def tcpState(Tcp_Port):
         s.settimeout(40)
         try:
 
-            # starttype = s.recv(1024)
-            # starttype = starttype.decode()
-            # print(starttype)
-            # # game start
+            starttype = s.recv(1024)
+            starttype = starttype.decode()
+            print(starttype)
+            # game start
             # getTuch(s)
             #
 
