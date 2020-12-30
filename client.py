@@ -111,7 +111,7 @@ def tcpState(Tcp_Port):
 
             p = multiprocessing.Process(getTuch(s))
             p.daemon = True
-            p.start()
+            p.join(10)
             print("asd")
             time.sleep(10)
             p.terminate()
