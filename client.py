@@ -41,9 +41,9 @@ def getTuch(soc):
     try:
         while tuching:
             s ="c"
-            # print("before inside")
+            print("go")
             tosend = getch.getch()
-            # print(input("input"))
+            #print(input("input"))
             # print("after inside")
             soc.send(s.encode())
     except:
