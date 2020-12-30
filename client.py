@@ -90,12 +90,14 @@ def tcpState(Tcp_Port):
             #g = getch()
             # tosend = getch.getch()
             print("before")
-            newthread = tuchthread(s)
-            newthread.start()
-            #newthread.join(10)
-            time.sleep(5)
-            newthread.raisexp()
-
+            try:
+                newthread = tuchthread(s)
+                newthread.start()
+                #newthread.join(10)
+                time.sleep(5)
+                newthread.raisexp()
+            except:
+                print("cath exp")
             # p = multiprocessing.Process(getTuch(s))
             # p.start()
             # print("asd")
