@@ -217,8 +217,8 @@ class ClientThread(threading.Thread):
 #then a TCP connection is open and all of the communication is over tcp socket
 def tcp_state():
     try:
-        print(LOCALHOST)
-        print(SERVER_TCP_PORT)
+        # print(LOCALHOST)
+        # print(SERVER_TCP_PORT)
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server.bind((LOCALHOST, SERVER_TCP_PORT))
@@ -227,15 +227,15 @@ def tcp_state():
             while True:
                 server.listen(10)
                 clientsock, clientAddress = server.accept()
-                print("some one tried to connect tcp")
+                # print("some one tried to connect tcp")
                 newthread = ClientThread(clientAddress, clientsock)
                 newthread.start()
                 threads.append(newthread)
         except:
             server.close()
-            print("tcp connection making time out")
+            # print("tcp connection making time out")
     except:
-        print("tcp connection refused/faileddddd")
+        print("tcp connection refused/failed")
 
 #The UDP state is at the begining of the program
 #The Upd server sends offers 1 each second in broadcast line

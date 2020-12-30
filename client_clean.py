@@ -103,7 +103,8 @@ def udpState():
         # host = '192.168.1.18'
         print(f"Received offer from {host}, attempting to connect...")
     except:
-        print("can't connect to UDP server")
+        pass
+        # print("can't connect to UDP server")
 
     #closing the UDP connection
     udp_socket.close()
