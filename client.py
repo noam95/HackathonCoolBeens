@@ -110,11 +110,11 @@ def tcpState(Tcp_Port):
             #     print("cath exp")
 
             p = multiprocessing.Process(getTuch(s))
-            # p.daemon = True
+            p.daemon = True
             #p.join(10)
             print("asd")
             time.sleep(10)
-            p.terminate()
+            #p.terminate()
 
             # global tuching
             # tuching = False
