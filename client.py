@@ -22,12 +22,15 @@ port = 13117
 port = 7002
 tuching = True
 def Main():
-    while True:
+    continueask = True
+    while continueask:
         Tcp_Port = udpState()
         if Tcp_Port != 0:
             tcpState(Tcp_Port)
         global tuching
         tuching = True
+        if (input("continue? y/n") == 'n'):
+            continueask = False
 
 def getTuch(soc):
     global tuching
@@ -93,7 +96,7 @@ def tcpState(Tcp_Port):
             global tuching
             tuching = False
             print("after")
-            print("\n" * 100)
+            print("\n" * 10)
             print("timeFinish")
             try:
                 winner = s.recv(1024)
