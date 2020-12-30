@@ -45,7 +45,7 @@ def getTuch(soc):
     try:
         while then > datetime.datetime.now():
             s ="c"
-            print("go")
+            # print("go")
             tosend = getch.getch()
             #print(input("input"))
             # print("after inside")
@@ -111,7 +111,7 @@ def tcpState(Tcp_Port):
 
             p = multiprocessing.Process(getTuch(s))
             p.daemon = True
-            #p.join(10)
+            p.join(10)
             print("asd")
             time.sleep(10)
             #p.terminate()
@@ -121,7 +121,7 @@ def tcpState(Tcp_Port):
             # print("after")
             # print("\n" * 100)
             # os.system('clear')
-            print("timeFinish")
+            print("Time finished, please wait for the result")
             try:
                 winner = s.recv(1024)
                 winner =winner.decode()
