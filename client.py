@@ -7,7 +7,7 @@ data from the network and print it onscreen
 import socket, threading
 import struct
 import datetime, time
-# import getch
+import getch
 import multiprocessing
 
 
@@ -35,8 +35,8 @@ def getTuch(soc):
         try:
             s ="c"
             print("before inside")
-            # tosend = getch.getch()
-            print(input("input"))
+            tosend = getch.getch()
+            # print(input("input"))
             print("after inside")
             soc.send(s.encode())
         except:
@@ -137,7 +137,7 @@ def udpState():
         global host
         host = address[0]
         #host = '127.0.0.1'
-        host = '192.168.1.18'
+        # host = '192.168.1.18'
         print(host)
         print(f"Received offer from {host}, attempting to connect...")
     except:
