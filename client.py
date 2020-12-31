@@ -28,8 +28,13 @@ def Main():
         if Tcp_Port != 0:
             tcpState(Tcp_Port)
 
-#This function hundle the keyboard pressing during the game
+
 def getTuch(soc):
+    """
+    This function hundle the keyboard pressing during the game
+    :param soc: the socket
+    :return:
+    """
     then = datetime.datetime.now() + datetime.timedelta(seconds=10)
     try:
         while then > datetime.datetime.now():
@@ -40,8 +45,13 @@ def getTuch(soc):
         print("fail in getting tuch func")
 
 
-#This function runs the logic of the TCP state- which responsible to connect the clients
+
 def tcpState(Tcp_Port):
+    """
+    This function runs the logic of the TCP state- which responsible to connect the clients
+    :param Tcp_Port:  the port of the server
+    :return:
+    """
     try:
         clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -81,9 +91,13 @@ def tcpState(Tcp_Port):
     except:
         pass
 
-#This function runs the UDP server which sends offers for 10 sec and connect all the clients
-#that respond to those offers
 def udpState():
+    """
+
+    This function runs the UDP server which sends offers for 10 sec and connect all the clients
+    that respond to those offers
+    :return: the port of the udp server which is the same over tcp connection
+    """
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM,socket.IPPROTO_UDP)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     TCP_PORT = 0

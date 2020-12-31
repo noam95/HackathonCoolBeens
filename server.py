@@ -11,10 +11,14 @@ import struct
 import time
 import datetime, time
 
-#Game class is where the game logic happends
-#There are two T
-#
+
+
+"""
+Game class is where the game logic happends
+There are two T
+"""
 class game:
+
 
     #Attributes
     team1 = []
@@ -26,8 +30,13 @@ class game:
     slowliestPlaer = ["", 0]
     totalpress= 0
 
-    #This function divide the clients into two groups
     def assignToTeam(self, player):
+        """
+        This function divide the clients into two groups
+
+        :param player: client thread
+        :return: the name of the team the client belongs to
+        """
         global gameClasslock1
         gameClasslock1.acquire(True)
         if self.bol:
@@ -41,8 +50,12 @@ class game:
             gameClasslock1.release()
             return "team2"
 
-    #getting the message of groups
+
     def getGroupsMsg(self):
+        """
+        Getting the message of groups
+        :return: the message
+        """
         msg ="group1\n"
         for i in self.team1:
             msg += i + "\n"
@@ -51,9 +64,15 @@ class game:
             msg += i + "\n"
         return msg
 
-    #The function is updating the counters of each team
     def updateScore(self, counter, grupName, name):
+        """
+        The function is updating the counters of each team and calculatin statistics of the game
 
+        :param counter:  count the keyboard pressing
+        :param grupName: name of the group the client belong to
+        :param name: client name
+        :return:
+        """
         global gameClasslock1
         gameClasslock1.acquire(True)
         if grupName == "team1":
@@ -70,8 +89,12 @@ class game:
         #release the lock to keep this function sync
         gameClasslock1.release()
 
-    #The function calculate who wins the game
     def calculateScore(self):
+        """
+        The function calculate who wins the game
+
+        :return: message with the game info. and winner
+        """
         msg= "game has finished\ngroup1 get " + str(self.counter1) + " points.\n"
         msg += "group2 get " + str(self.counter2) + " points\n"
         msg += "The best player was " + self.fastestPlayer[0] + " he pressed " +str(self.fastestPlayer[1]) + " on keyboard\n"
@@ -90,8 +113,12 @@ class game:
         msg += "Congratulations!!!!!!!!"
         return msg
 
-    #The function reset all the variables that need to be restart before the next game
     def reset(self):
+        """
+        The function reset all the variables that need to be restart before the next game
+
+        :return:  None
+        """
         self.team1 = []
         self.team2 = []
         self.bol = True
@@ -112,8 +139,11 @@ sendScoreLock1 = threading.Lock()
 threads = []
 game1 = game()
 
-#The class is for colored messages
 class bcolors:
+    """
+    The class is for colored messages on the terminal screen
+
+    """
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
@@ -150,23 +180,32 @@ def Main():
     #close all the threads
     #reset game
 
-#The class hundle the UDP thread that we execute at the begining of the main function
 class udpThraed(threading.Thread):
+    """
+    The class hundle the UDP thread that we execute at the begining of the main function
+
+    """
     def __init__(self):
         threading.Thread.__init__(self)
     def run(self):
         udpState()
 
-#The class hundle the TCP thread that we execute at the begining of the main function
 class tcpConnection(threading.Thread):
+    """
+    The class hundle the TCP thread that we execute at the begining of the main function
+
+    """
     def __init__(self):
         threading.Thread.__init__(self)
     def run(self):
         tcp_state()
 
-#After responde to the UDP offer each client is connect over TCP protocol
-#We generate thread for each client to run the program parallel
+
 class ClientThread(threading.Thread):
+    """
+    After responde to the UDP offer each client is connect over TCP protocol
+    we generate thread for each client to run the program parallel
+    """
     groupName = ""
     clientname = ""
     def __init__(self, clientAddress, clientsocket):
@@ -175,6 +214,10 @@ class ClientThread(threading.Thread):
         self.csocket = clientsocket
 
     def run(self):
+        """
+        The function define the running of threads in this class
+        :return:
+        """
         self.csocket.settimeout(40)#case no msg recived
         data = self.csocket.recv(2048)
         self.clientname = data.decode()
@@ -191,8 +234,12 @@ class ClientThread(threading.Thread):
         if not val:
             return
 
-    #The function sends the starting game message to all of the clients
     def startGameMassge(self):
+        """
+        The function sends the starting game message to all of the clients
+
+        :return:
+        """
         try:
             msg = '\033[95m' + 'Welcome to Keyboard Spamming Battle Royale.\n'+ bcolors.ENDC + bcolors.HEADER + bcolors.OKBLUE + bcolors.OKCYAN +'by KORKIFIX 077-202-4828 10 presents dicount for the winner!' + bcolors.ENDC+'\n'
             groupsMsg = '\033[94m' + game1.getGroupsMsg() + bcolors.ENDC
@@ -225,9 +272,13 @@ class ClientThread(threading.Thread):
             print("client lost connection")
             return False
 
-#The TCP state is after client respond to offer-
-#then a TCP connection is open and all of the communication is over tcp socket
+
 def tcp_state():
+    """
+    The TCP state is after client respond to offer-
+    then a TCP connection is open and all of the communication is over tcp socket
+    :return:
+    """
     try:
         # print(LOCALHOST)
         # print(SERVER_TCP_PORT)
@@ -236,6 +287,7 @@ def tcp_state():
         server.bind((LOCALHOST, SERVER_TCP_PORT))
         server.settimeout(10)
         try:
+            #connect client via tcp protocol and generate a client thread
             while True:
                 server.listen(10)
                 clientsock, clientAddress = server.accept()
@@ -249,10 +301,14 @@ def tcp_state():
     except:
         print("tcp connection refused/failed")
 
-#The UDP state is at the begining of the program
-#The Upd server sends offers 1 each second in broadcast line
-#after client respond he pass to the TCP state
+
 def udpState():
+    """
+    The UDP state is at the begining of the program
+    The Upd server sends offers 1 each second in broadcast line
+    after client respond he pass to the TCP state
+    :return:
+    """
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
