@@ -98,6 +98,7 @@ LOCALHOST = socket.gethostbyname(socket.gethostname())
 # LOCALHOST = '172.18.0.108'
 UDP_PORT = 13117
 SERVER_TCP_PORT = 7000
+server_to_connect ='172.1.0'
 gameClasslock1 = threading.Lock()
 getMessageLock1 = threading.Lock()
 sendScoreLock1 = threading.Lock()
@@ -148,12 +149,14 @@ class udpThraed(threading.Thread):
         threading.Thread.__init__(self)
     def run(self):
         udpState()
+
 #The class hundle the TCP thread that we execute at the begining of the main function
 class tcpConnection(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
     def run(self):
         tcp_state()
+
 #After responde to the UDP offer each client is connect over TCP protocol
 #We generate thread for each client to run the program parallel
 class ClientThread(threading.Thread):
@@ -250,7 +253,7 @@ def udpState():
     print(f"Server started,listening on IP address {LOCALHOST}")
     then = datetime.datetime.now() + datetime.timedelta(seconds=10)
     while then > datetime.datetime.now():
-        udp_socket.sendto(udp_offer_msg, ('172.1.0', UDP_PORT))
+        udp_socket.sendto(udp_offer_msg, (server_to_connect, UDP_PORT))
         # udp_socket.sendto(udp_offer_msg, ('<broadcast>', UDP_PORT))
         time.sleep(1)
 

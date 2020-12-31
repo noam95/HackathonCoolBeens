@@ -7,6 +7,7 @@ data from the network and print it onscreen
 import socket, threading
 import struct
 import datetime, time
+
 import getch
 import multiprocessing
 
@@ -32,43 +33,40 @@ def getTuch(soc):
     then = datetime.datetime.now() + datetime.timedelta(seconds=10)
     try:
         while then > datetime.datetime.now():
-            s = "c"
-            if getch.kbhit():
-                tosend = getch.getch()
-                soc.send(s.encode())
+            msg = "c"
+            tosend = getch.getch()
+            soc.send(msg.encode())
     except:
         print("fail in getting tuch func")
 
 
-
 #This function runs the logic of the TCP state- which responsible to connect the clients
-#
 def tcpState(Tcp_Port):
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # connect to server on local computer
-        s.connect((host, Tcp_Port))
+        clientSocket.connect((host, Tcp_Port))
 
         # message you send to server
         team_name = "Korkifix"
 
         # message sent to server
-        s.send(team_name.encode())
+        clientSocket.send(team_name.encode())
 
-        s.settimeout(40)
+        clientSocket.settimeout(40)
         try:
-            starttype = s.recv(1024)
+            starttype = clientSocket.recv(1024)
             starttype = starttype.decode()
             print(starttype)
             # game start
-            p = multiprocessing.Process(getTuch(s))
+            process = multiprocessing.Process(getTuch(clientSocket))
 
             print("Time finished, please wait for the result")
             try:
                 #recieved winner message
-                winner = s.recv(1024)
-                winner =winner.decode()
+                winner = clientSocket.recv(1024)
+                winner = winner.decode()
                 print(winner)
                 time.sleep(4)
             except:
@@ -77,9 +75,10 @@ def tcpState(Tcp_Port):
         except:
             pass
         # close the  TCP connection
-        s.close()
+        clientSocket.close()
     except:
         pass
+
 #This function runs the UDP server which sends offers for 10 sec and connect all the clients
 #that respond to those offers
 def udpState():
@@ -88,20 +87,19 @@ def udpState():
     TCP_PORT = 0
     udp_socket.bind(("", port))
     print("Client started, listening for offer requests...")
-    x = True
+    flag = True
+    #client recieving the udp offer and decode the format message
     try:
-        while x:
+        while flag:
             buffer, address = udp_socket.recvfrom(1024)
             unPackMsg = struct.unpack('I B H', buffer)
             #checks if the UDP message is not in the required format
             if unPackMsg[0] == 0xfeedbeef and unPackMsg[1] == 0x2:
-                x = False
+                flag = False
 
         TCP_PORT = unPackMsg[2]
         global host
         host = address[0]
-        #host = '127.0.0.1'
-        # host = '192.168.1.18'
         print(f"Received offer from {host}, attempting to connect...")
     except:
         pass
