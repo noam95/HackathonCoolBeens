@@ -70,9 +70,11 @@ def tcpState(Tcp_Port):
                 print(winner)
                 time.sleep(4)
             except:
+                #problem occur while waiting to game over message from server
                 pass
             # game end
         except:
+            #problem occur before the game started
             pass
         # close the  TCP connection
         clientSocket.close()
@@ -102,8 +104,8 @@ def udpState():
         host = address[0]
         print(f"Received offer from {host}, attempting to connect...")
     except:
+        #Theres been a problem to connect the UDP server
         pass
-        # print("can't connect to UDP server")
 
     #closing the UDP connection
     udp_socket.close()

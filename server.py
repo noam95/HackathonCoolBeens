@@ -15,6 +15,8 @@ import datetime, time
 #There are two T
 #
 class game:
+
+    #Attributes
     team1 = []
     team2 = []
     bol = True
@@ -23,6 +25,7 @@ class game:
     fastestPlayer = ["", 0]
     slowliestPlaer = ["", 0]
     totalpress= 0
+
     #This function divide the clients into two groups
     def assignToTeam(self, player):
         global gameClasslock1
@@ -37,6 +40,7 @@ class game:
             self.bol = True
             gameClasslock1.release()
             return "team2"
+
     #getting the message of groups
     def getGroupsMsg(self):
         msg ="group1\n"
@@ -47,11 +51,12 @@ class game:
             msg += i + "\n"
         return msg
 
-    #The function is updating score the counters
+    #The function is updating the counters of each team
     def updateScore(self, counter, grupName, name):
+
         global gameClasslock1
         gameClasslock1.acquire(True)
-        if (grupName == "team1"):
+        if grupName == "team1":
             self.counter1 += counter
         else:
             self.counter2 += counter
@@ -62,16 +67,17 @@ class game:
         if counter < self.slowliestPlaer[1]:
             self.slowliestPlaer[1] = counter
             self.slowliestPlaer[0] = name
+        #release the lock to keep this function sync
         gameClasslock1.release()
 
     #The function calculate who wins the game
     def calculateScore(self):
-        msg= "game has finished\ngroup1 get "+ str(self.counter1) +" points.\n"
+        msg= "game has finished\ngroup1 get " + str(self.counter1) + " points.\n"
         msg += "group2 get " + str(self.counter2) + " points\n"
         msg += "The best player was " + self.fastestPlayer[0] + " he pressed " +str(self.fastestPlayer[1]) + " on keyboard\n"
         msg += "The worst player was " + self.slowliestPlaer[0] + " he pressed " + str(self.slowliestPlaer[1]) + " on keyboard\n"
         msg += "The average presses for all the players together was " + str(self.totalpress/(len(self.team2)+ len(self.team1))) + " press in 10 sec"
-        msg += "\nAnd the winer is......."
+        msg += "\nAnd the winner is......."
         flag= False
         if self.counter1> self.counter2:
             flag = True
@@ -80,9 +86,10 @@ class game:
             flag = True
             msg+= str(self.team2)
         if not flag:
-            msg+= "tekooooo\n"
+            msg += "DRAW\n"
         msg += "Congratulations!!!!!!!!"
         return msg
+
     #The function reset all the variables that need to be restart before the next game
     def reset(self):
         self.team1 = []
@@ -193,6 +200,7 @@ class ClientThread(threading.Thread):
             self.csocket.send(startMsg.encode())
             counter_game = 0
             then = datetime.datetime.now() + datetime.timedelta(seconds=10)
+            #the server recive keys pressing from client
             try:
                 while then > datetime.datetime.now():
                     time.sleep(0.01)
@@ -202,6 +210,7 @@ class ClientThread(threading.Thread):
             except:
                 print("fail in getting typing from client")
                 return False
+
             #after game update the main counter with the result of this client
             game1.updateScore(counter_game, self.groupName, self.clientname)
         except:
@@ -213,7 +222,7 @@ class ClientThread(threading.Thread):
             msg = bcolors.WARNING + bcolors.BOLD + game1.calculateScore()+ bcolors.ENDC
             self.csocket.send(msg.encode())
         except:
-            print("client connection lost")
+            print("client lost connection")
             return False
 
 #The TCP state is after client respond to offer-
