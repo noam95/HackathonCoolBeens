@@ -33,8 +33,9 @@ def getTuch(soc):
     try:
         while then > datetime.datetime.now():
             s = "c"
-            tosend = getch.getch()
-            soc.send(s.encode())
+            if getch.kbhit():
+                tosend = getch.getch()
+                soc.send(s.encode())
     except:
         print("fail in getting tuch func")
 
